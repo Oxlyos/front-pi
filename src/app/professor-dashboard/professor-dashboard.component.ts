@@ -1,92 +1,104 @@
 import { Component, OnInit } from '@angular/core';
-import { Professor } from '../interfaces/app.interfaces'; // Assuming we can reuse the Professor interface
+import { Professor } from '../interfaces/app.interfaces';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { ProfessorDashboardService } from './professor-dashboard.service'; // Uncommented the service import
-import { Course } from '../interfaces/app.interfaces'; // Import Course interface for myCourses type
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { CourseService } from '../services/course.service';
+import { Course } from '../interfaces/app.interfaces';
 
 @Component({
   selector: 'app-professor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, HttpClientModule], // Add HttpClientModule here
+  imports: [CommonModule, RouterLink, FormsModule, HttpClientModule],
   templateUrl: './professor-dashboard.component.html',
   styleUrl: './professor-dashboard.component.css'
 })
 export class ProfessorDashboardComponent implements OnInit {
   professor: Professor = {
-    id: '1',
-    name: 'Professor Jane Doe',
-    title: 'Computer Science Department Head',
-    description: 'Passionate educator with over 10 years of experience in computer science and web development. Dedicated to fostering student growth and innovation.',
-    image: 'placeholder-professor-profile.png',
+    id: '',
+    name: '',
+    title: '',
+    description: '',
+    image: '',
     socialLinks: { linkedin: '#' }
   };
 
-  // TODO: Remove staticCourses after API is fully connected and returning data
-  staticCourses: Course[] = [
-    { id: 1, title: 'Advanced Web Development', description: 'Deep dive into modern web technologies.', instructor: 'Professor Jane Doe', image: 'assets/course1.jpg', rating: 4.8, price: '$99.99' },
-    { id: 2, title: 'Introduction to Algorithms', description: 'Fundamentals of data structures and algorithms.', instructor: 'Professor Jane Doe', image: 'assets/course2.jpg', rating: 4.5, price: '$79.99' },
-    { id: 3, title: 'Database Management Systems', description: 'Design and manage relational databases.', instructor: 'Professor Jane Doe', image: 'assets/course3.jpg', rating: 4.2, price: '$89.99' },
-  ];
-
-  myCourses: Course[] = []; // Use Course interface
+  myCourses: Course[] = [];
 
   showAnnouncementForm: boolean = false;
   newAnnouncement = {
     title: '',
     description: '',
-    courseId: null as number | null // Changed to number | null
+    courseId: null as number | null
   };
 
-  showEditProfileForm: boolean = false; // Controls visibility of the edit form
-  professorProfile: Professor = { ...this.professor }; // Initialize with current professor data
-  selectedFile: File | null = null; // To hold the selected image file
+  showEditProfileForm: boolean = false;
+  professorProfile: Professor = { ...this.professor };
+  selectedFile: File | null = null;
 
-  showCreateCourseForm: boolean = false; // Controls visibility of the create course form
+  showCreateCourseForm: boolean = false;
   newCourse = {
     title: '',
     description: '',
-    professorIntroduction: '', // New: Professor's introduction specific to this course
-    thumbnail: '', // Will store the URL or base64 string after upload/selection
-    videoLinks: [''], // Array to hold multiple video URLs
-    pdfFiles: [] as File[], // Array to hold multiple PDF files
-    professorId: this.professor.id // Assign the current professor's ID
+    professorIntroduction: '',
+    thumbnail: '',
+    videoLinks: [''],
+    pdfFiles: [] as File[],
+    professorId: ''
   };
-  selectedThumbnail: File | null = null; // To hold the selected thumbnail file
-  selectedPdfs: File[] = []; // To hold the selected PDF files
+  selectedThumbnail: File | null = null;
+  selectedPdfs: File[] = [];
 
-  constructor(private professorDashboardService: ProfessorDashboardService) { } // Uncommented
+  constructor(
+    private authService: AuthService,
+    private courseService: CourseService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+    this.fetchProfessorProfile();
     this.fetchProfessorCourses();
   }
 
-  fetchProfessorCourses(): void {
-    if (this.professor.id) {
-      this.professorDashboardService.getProfessorCourses(this.professor.id).subscribe(data => {
-        this.myCourses = data;
-        console.log('Professor courses fetched:', this.myCourses);
-      }, error => {
-        console.error('Error fetching professor courses from service:', error);
-        // Service already handles fallback to static data
-      });
+  fetchProfessorProfile(): void {
+    const user = this.authService.getUser();
+    if (user) {
+      this.professor = { ...this.professor, ...user };
+      this.professor.name = user.name || user.firstName + ' ' + user.lastName;
+      this.professor.id = user.id; // Ensure ID is set
+      this.newCourse.professorId = user.id;
     } else {
-      console.error('Professor ID is not available. Cannot fetch courses.');
-      this.myCourses = this.staticCourses; // Use static data if professor ID is not available
+      this.authService.getProfile().subscribe({
+        next: (data) => {
+          this.professor = data;
+          this.newCourse.professorId = data.id;
+        },
+        error: (err: any) => console.error('Error fetching profile', err)
+      });
     }
   }
 
-  // Method to handle logout (placeholder)
+  fetchProfessorCourses(): void {
+    this.courseService.getMyCourses().subscribe({
+      next: (data) => {
+        this.myCourses = data;
+        console.log('Professor courses fetched:', this.myCourses);
+      },
+      error: (error: any) => {
+        console.error('Error fetching professor courses:', error);
+      }
+    });
+  }
+
   logout(): void {
-    console.log('Professor logged out');
-    // TODO: Implement actual logout logic (e.g., clear session, navigate to login)
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   toggleAnnouncementForm(): void {
     this.showAnnouncementForm = !this.showAnnouncementForm;
-    // Reset form when closing
     if (!this.showAnnouncementForm) {
       this.newAnnouncement = { title: '', description: '', courseId: null };
     }
@@ -94,14 +106,16 @@ export class ProfessorDashboardComponent implements OnInit {
 
   submitAnnouncement(): void {
     if (this.newAnnouncement.title.trim() && this.newAnnouncement.description.trim() && this.newAnnouncement.courseId !== null) {
-      console.log('Submitting announcement:', this.newAnnouncement);
-      this.professorDashboardService.createAnnouncement(this.newAnnouncement).subscribe(response => {
-        console.log('Announcement created successfully:', response);
-        this.toggleAnnouncementForm(); // Close form on success
-        this.fetchProfessorCourses(); // Refresh courses to potentially show new announcement
-      }, error => {
-        console.error('Error creating announcement:', error);
-        alert('Failed to create announcement. Please try again.');
+      // Convert courseId to string if needed by service
+      this.courseService.addAnnouncement(this.newAnnouncement.courseId.toString(), this.newAnnouncement).subscribe({
+        next: (response) => {
+          console.log('Announcement created successfully:', response);
+          this.toggleAnnouncementForm();
+        },
+        error: (error: any) => {
+          console.error('Error creating announcement:', error);
+          alert('Failed to create announcement. Please try again.');
+        }
       });
     } else {
       alert('Please fill in all fields and select a course.');
@@ -111,9 +125,8 @@ export class ProfessorDashboardComponent implements OnInit {
   toggleEditProfileForm(): void {
     this.showEditProfileForm = !this.showEditProfileForm;
     if (this.showEditProfileForm) {
-      // Initialize form with current values when opening
-      this.professorProfile = { ...this.professor }; // Create a shallow copy to prevent direct mutation
-      this.selectedFile = null; // Reset selected file
+      this.professorProfile = { ...this.professor };
+      this.selectedFile = null;
     }
   }
 
@@ -127,59 +140,18 @@ export class ProfessorDashboardComponent implements OnInit {
   }
 
   submitProfileChanges(): void {
-    if (!this.professor.id) {
-      console.error('Professor ID is not available. Cannot update profile.');
-      alert('Failed to update profile: Professor ID is missing.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('name', this.professorProfile.name);
-    formData.append('title', this.professorProfile.title);
-    formData.append('description', this.professorProfile.description);
-
-    if (this.selectedFile) {
-      formData.append('profileImage', this.selectedFile, this.selectedFile.name);
-    }
-
-    this.professorDashboardService.updateProfessorProfile(this.professor.id, formData).subscribe({
-      next: (response) => {
-        console.log('Profile update response:', response);
-        // Update component properties after successful submission (or API response)
-        this.professor.name = this.professorProfile.name;
-        this.professor.title = this.professorProfile.title;
-        this.professor.description = this.professorProfile.description;
-
-        if (this.selectedFile) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            if (typeof reader.result === 'string') {
-              this.professor.image = reader.result; // Update profile image to new image
-            }
-          };
-          if (this.selectedFile) {
-            reader.readAsDataURL(this.selectedFile);
-          }
-        }
-
-        this.toggleEditProfileForm(); // Close form after submission
-        alert('Professor profile updated successfully!');
-      },
-      error: (err) => {
-        console.error('Error updating profile:', err);
-        alert('Failed to update profile. Please try again.');
-      }
-    });
+    // Implement update profile logic
+    console.log('Update profile not fully implemented yet');
+    this.toggleEditProfileForm();
   }
 
   toggleCreateCourseForm(): void {
     this.showCreateCourseForm = !this.showCreateCourseForm;
-    // Reset form when closing
     if (!this.showCreateCourseForm) {
       this.newCourse = {
         title: '',
         description: '',
-        professorIntroduction: '', // Reset this field too
+        professorIntroduction: '',
         thumbnail: '',
         videoLinks: [''],
         pdfFiles: [] as File[],
@@ -217,35 +189,43 @@ export class ProfessorDashboardComponent implements OnInit {
   }
 
   submitCourse(): void {
-    if (this.newCourse.title.trim() && this.newCourse.description.trim() && this.newCourse.videoLinks.some(link => link.trim() !== '')) {
-      console.log('Submitting new course:', this.newCourse);
-
+    if (this.newCourse.title.trim() && this.newCourse.description.trim()) {
       const formData = new FormData();
       formData.append('title', this.newCourse.title);
       formData.append('description', this.newCourse.description);
-      formData.append('professorIntroduction', this.newCourse.professorIntroduction); // Add new field
-      formData.append('professorId', this.newCourse.professorId);
+      formData.append('professor_introduction', this.newCourse.professorIntroduction);
+
+      // Append video links
+      this.newCourse.videoLinks.forEach((link) => {
+        if (link.trim()) {
+          formData.append('video_links', link.trim());
+        }
+      });
+
       if (this.selectedThumbnail) {
         formData.append('thumbnail', this.selectedThumbnail, this.selectedThumbnail.name);
       }
-      this.newCourse.videoLinks.forEach((link, index) => {
-        if (link.trim() !== '') {
-          formData.append(`videoLinks[${index}]`, link);
+
+      // Append PDFs
+      if (this.selectedPdfs && this.selectedPdfs.length > 0) {
+        this.selectedPdfs.forEach((file) => {
+          formData.append('coursePdfFiles', file, file.name);
+        });
+      }
+
+      this.courseService.createCourse(formData).subscribe({
+        next: (response) => {
+          console.log('Course created successfully:', response);
+          this.toggleCreateCourseForm();
+          this.fetchProfessorCourses();
+        },
+        error: (error: any) => {
+          console.error('Error creating course:', error);
+          alert('Failed to create course. Please try again.');
         }
       });
-      this.selectedPdfs.forEach((pdfFile, index) => {
-        formData.append(`pdfFiles[${index}]`, pdfFile, pdfFile.name);
-      });
-      this.professorDashboardService.createCourse(formData).subscribe(response => {
-        console.log('Course created successfully:', response);
-        this.toggleCreateCourseForm(); // Close form on success
-        this.fetchProfessorCourses(); // Refresh course list
-      }, error => {
-        console.error('Error creating course:', error);
-        alert('Failed to create course. Please try again.');
-      });
     } else {
-      alert('Please fill in at least the course title, description, and one video link.');
+      alert('Please fill in at least the course title and description.');
     }
   }
 }

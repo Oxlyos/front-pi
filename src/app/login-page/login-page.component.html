@@ -1,24 +1,24 @@
 <div class="login-container">
   <div class="illustration-section">
-  
+
   </div>
 
   <div class="login-form-section">
     <div class="login-form-content">
 
-     
-      <form class="form">
-        <div class="logo"><img src="../../assets/logo.png" alt="SkillBridge Logo"></div> 
+
+      <form class="form" (ngSubmit)="onLogin()">
+        <div class="logo"><img src="../../assets/logo.png" alt="SkillBridge Logo"></div>
         <h2>Hello Again!</h2>
-        <input type="email" placeholder="Email ">
-        <input type="password" placeholder="Password">
+        <input type="email" placeholder="Email" [(ngModel)]="credentials.email" name="email" required>
+        <input type="password" placeholder="Password" [(ngModel)]="credentials.password" name="password" required>
         <div class="user-type-selection">
           <span class="user-type-phrase">You're a :</span>
           <label>
-            <input type="radio" name="userType" value="student" checked> Student
+            <input type="radio" name="userType" value="student" [(ngModel)]="credentials.userType"> Student
           </label>
           <label>
-            <input type="radio" name="userType" value="professor"> Professor
+            <input type="radio" name="userType" value="professor" [(ngModel)]="credentials.userType"> Professor
           </label>
         </div>
         <a href="#" class="recovery-password">Recovery Password!</a>
@@ -26,13 +26,13 @@
         <div class="divider">Or continue with</div>
 
         <div class="social-login">
-          <button class="social-btn google"></button>
-          <button class="social-btn linkedin"></button>
-          <button class="social-btn github"></button>
+          <button class="social-btn google" type="button"></button>
+          <button class="social-btn linkedin" type="button"></button>
+          <button class="social-btn github" type="button"></button>
         </div>
       </form>
 
-   
+
     </div>
   </div>
 </div>

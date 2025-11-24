@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LandingPageService } from './landing-page.service'; // Uncommented
-import { Testimonial, Professor, Course } from '../interfaces/app.interfaces'; // Updated import path
+import { RouterLink } from '@angular/router';
+import { LandingPageService } from './landing-page.service';
+import { CourseService } from '../services/course.service';
+import { Testimonial, Professor, Course } from '../interfaces/app.interfaces';
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.css'
 })
@@ -21,42 +23,52 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   itemsPerSlide = 3;
   isTransitioning = true;
 
-  constructor(private landingPageService: LandingPageService) { } // Uncommented
+  constructor(
+    private landingPageService: LandingPageService,
+    private courseService: CourseService
+  ) { }
 
   ngOnInit() {
 
     //testimonials function
-    this.landingPageService.getTestimonials().subscribe((data: Testimonial[]) => {
-      this.originalTestimonials = data;
-      const lastClones = this.originalTestimonials.slice(-this.itemsPerSlide);
-      const firstClones = this.originalTestimonials.slice(0, this.itemsPerSlide);
-      this.testimonials = [...lastClones, ...this.originalTestimonials, ...firstClones];
+    this.landingPageService.getTestimonials().subscribe({
+      next: (data: Testimonial[]) => {
+        this.originalTestimonials = data;
+        const lastClones = this.originalTestimonials.slice(-this.itemsPerSlide);
+        const firstClones = this.originalTestimonials.slice(0, this.itemsPerSlide);
+        this.testimonials = [...lastClones, ...this.originalTestimonials, ...firstClones];
 
-      this.currentSlideIndex = this.itemsPerSlide;
-      this.startSlideShow();
-    }, error => {
-      console.error('Error fetching testimonials from service:', error);
+        this.currentSlideIndex = this.itemsPerSlide;
+        this.startSlideShow();
+      },
+      error: (error: any) => {
+        console.error('Error fetching testimonials from service:', error);
+      }
     });
 
     //our professors function
-    this.landingPageService.getProfessors().subscribe((data: Professor[]) => {
-      this.professors = data;
-    }, error => {
-      console.error('Error fetching professors from service:', error);
+    this.landingPageService.getProfessors().subscribe({
+      next: (data: Professor[]) => {
+        this.professors = data;
+      },
+      error: (error: any) => {
+        console.error('Error fetching professors from service:', error);
+      }
     });
 
     //courses function
-    this.landingPageService.getCourses().subscribe((data: Course[]) => {
-      this.courses = data;
-    }, error => {
-      console.error('Error fetching courses from service:', error);
+    this.courseService.getAllCourses().subscribe({
+      next: (data: any) => {
+        // Assuming API returns an array of courses directly or wrapped
+        this.courses = Array.isArray(data) ? data : data.courses || [];
+      },
+      error: (error: any) => {
+        console.error('Error fetching courses:', error);
+      }
     });
 
   }
 
-
-
-  
   ngOnDestroy() {
     this.stopSlideShow();
   }

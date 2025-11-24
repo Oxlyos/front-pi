@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { FormsModule } from '@angular/forms'; // Import FormsModule for template-driven forms
-import { LoginPageService } from './login-page.service'; // Uncommented the service import
-import { LoginData } from '../interfaces/app.interfaces'; // Updated import path
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { LoginData } from '../interfaces/app.interfaces';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -15,25 +16,31 @@ export class LoginPageComponent {
   credentials: LoginData = {
     email: '',
     password: '',
-    userType: 'student' // Default to student. Ensure this matches the LoginData interface.
+    userType: 'student'
   };
 
-  constructor(private loginPageService: LoginPageService) { } // Uncommented
+  constructor(private authService: AuthService, private router: Router) { }
 
   onLogin() {
-    this.loginPageService.login(this.credentials).subscribe(response => {
-      if (response.success) {
-        console.log('Login successful:', response.user);
-        // TODO: Handle successful login (e.g., navigate to dashboard, store token)
-        alert(`Login successful for ${this.credentials.email} as ${this.credentials.userType}!`);
-      } else {
-        console.error('Login failed:', response.message);
-        // TODO: Handle login failure (e.g., display error message)
-        alert(`Login failed: ${response.message}`);
+    const payload = {
+      email: this.credentials.email,
+      password: this.credentials.password,
+      role: this.credentials.userType
+    };
+    this.authService.login(payload).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        // Navigate based on user type or to home
+        if (this.credentials.userType === 'professor') {
+          this.router.navigate(['/professor-dashboard']);
+        } else {
+          this.router.navigate(['/student-dashboard']);
+        }
+      },
+      error: (error) => {
+        console.error('Login failed:', error);
+        alert('Login failed. Please check your credentials.');
       }
-    }, error => {
-      console.error('Error during login service call:', error);
-      alert('An unexpected error occurred during login. Please try again.');
     });
   }
 }

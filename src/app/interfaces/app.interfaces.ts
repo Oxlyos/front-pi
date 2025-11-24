@@ -113,6 +113,7 @@ export interface UserData {
   password: string;
   userType: 'student' | 'professor'; // Assuming these are the main types
   termsAgreed: boolean;
+  confirmPassword?: string;
 }
 
 export interface SignupResponse {
@@ -128,7 +129,7 @@ export interface SignupResponse {
 
 // forum interfaces
 export interface User {
-  id: string; 
+  id: string;
   userName: string;
   role: 'Student' | 'Professor' | 'Admin';
   avatar: string;
@@ -142,7 +143,7 @@ export interface Reply {
 }
 
 export interface Post {
-  id: string; 
+  id: string;
   user: User;
   content: string;
   timestamp: string;

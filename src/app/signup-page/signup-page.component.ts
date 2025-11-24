@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { FormsModule } from '@angular/forms'; // Import FormsModule for template-driven forms
-import { SignupPageService } from './signup-page.service'; // Uncommented the service import
-import { UserData } from '../interfaces/app.interfaces'; // Updated import path
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { UserData } from '../interfaces/app.interfaces';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup-page',
@@ -23,10 +24,9 @@ export class SignupPageComponent {
     termsAgreed: false
   };
 
-  constructor(private signupPageService: SignupPageService) { } // Uncommented
+  constructor(private authService: AuthService, private router: Router) { }
 
   onSignup() {
-    // TODO: Add client-side validation here before sending to service
     if (this.userData.password !== this.userData.confirmPassword) {
       alert('Passwords do not match.');
       return;
@@ -37,19 +37,27 @@ export class SignupPageComponent {
       return;
     }
 
-    this.signupPageService.signup(this.userData).subscribe(response => {
-      if (response.success) {
-        console.log('Signup successful:', response.user);
-        // TODO: Handle successful signup (e.g., navigate to login, show success message)
-        alert(`Signup successful for ${this.userData.email} as ${this.userData.userType}!`);
-      } else {
-        console.error('Signup failed:', response.message);
-        // TODO: Handle signup failure (e.g., display error message)
-        alert(`Signup failed: ${response.message}`);
+    // Prepare data for API (remove confirmPassword and termsAgreed if not needed by backend)
+    const { confirmPassword, termsAgreed, firstName, lastName, phoneNumber, userType, ...rest } = this.userData;
+
+    const apiData = {
+      ...rest,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: phoneNumber,
+      role: userType
+    };
+
+    this.authService.register(apiData).subscribe({
+      next: (response) => {
+        console.log('Signup successful:', response);
+        alert('Signup successful! Please login.');
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        console.error('Signup failed:', error);
+        alert('Signup failed. Please try again.');
       }
-    }, error => {
-      console.error('Error during signup service call:', error);
-      alert('An unexpected error occurred during signup. Please try again.');
     });
   }
 }

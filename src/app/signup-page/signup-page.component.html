@@ -20,43 +20,56 @@
       <p class="subtitle">Welcome! Enter your details below.</p>
 
       <!-- INPUT FIELDS -->
-      <form>
-
+      <form (ngSubmit)="onSignup()">
         <div class="input-group">
           <label>First Name</label>
-          <input type="text" placeholder="Your first name">
+          <input type="text" placeholder="Your first name" [(ngModel)]="userData.firstName" name="firstName" required>
         </div>
 
         <div class="input-group">
           <label>Last Name</label>
-          <input type="text" placeholder="Your last name">
+          <input type="text" placeholder="Your last name" [(ngModel)]="userData.lastName" name="lastName" required>
         </div>
 
         <div class="input-group">
           <label>Phone Number</label>
-          <input type="text" placeholder="Your phone number">
+          <input type="text" placeholder="Your phone number" [(ngModel)]="userData.phoneNumber" name="phoneNumber"
+            required>
         </div>
 
         <div class="input-group">
           <label>Email address</label>
-          <input type="email" placeholder="Your email address">
+          <input type="email" placeholder="Your email address" [(ngModel)]="userData.email" name="email" required>
         </div>
 
         <div class="input-group">
           <label>Password</label>
-          <input type="password" placeholder="Password">
+          <input type="password" placeholder="Password" [(ngModel)]="userData.password" name="password" required>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <input type="password" placeholder="Confirm Password" [(ngModel)]="userData.confirmPassword"
+            name="confirmPassword" required>
         </div>
 
         <div class="user-type-selection">
           <label class="user-type-phrase">You're a:</label>
-          <label><input type="radio" name="userType" value="student" checked> Student</label>
-          <label><input type="radio" name="userType" value="professor"> Professor</label>
+          <label><input type="radio" name="userType" value="student" [(ngModel)]="userData.userType"> Student</label>
+          <label><input type="radio" name="userType" value="professor" [(ngModel)]="userData.userType">
+            Professor</label>
         </div>
 
-        <button class="primary-btn">Sign Up</button>
+        <div class="terms-checkbox">
+          <label>
+            <input type="checkbox" name="termsAgreed" [(ngModel)]="userData.termsAgreed" required>
+            I agree to the terms and conditions
+          </label>
+        </div>
+
+        <button type="submit" class="primary-btn">Sign Up</button>
 
         <div class="separator">OR</div>
-
       </form>
 
       <p class="footer-text">

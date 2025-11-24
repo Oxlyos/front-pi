@@ -681,7 +681,7 @@ padding-top: 20px;
 .next-slide::before {
   content: '\203A'; /* Right arrow character */
 }
-*/
+
 
 .testimonial-card .section-description {
   font-size: 28px;
