@@ -7,6 +7,8 @@ import { StudentDashboardComponent } from './student-dashboard/student-dashboard
 import { ProfessorDashboardComponent } from './professor-dashboard/professor-dashboard.component';
 import { ForumComponent } from './forum/forum.component';
 import { CoursePageComponent } from './course-page/course-page.component';
+import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
     { path: '', component: LandingPageComponent },
@@ -14,7 +16,17 @@ export const routes: Routes = [
     { path: 'signup', component: SignupPageComponent },
     { path: 'home', component: HomePageComponent },
     { path: 'courses/:id', component: CoursePageComponent },
-    { path: 'student-dashboard', component: StudentDashboardComponent },
-    { path: 'professor-dashboard', component: ProfessorDashboardComponent },
+    {
+        path: 'student-dashboard',
+        component: StudentDashboardComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'student' }
+    },
+    {
+        path: 'professor-dashboard',
+        component: ProfessorDashboardComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { role: 'professor' }
+    },
     { path: 'forum', component: ForumComponent }
 ];

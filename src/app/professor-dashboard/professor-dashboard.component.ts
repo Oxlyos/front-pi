@@ -65,15 +65,34 @@ export class ProfessorDashboardComponent implements OnInit {
   fetchProfessorProfile(): void {
     const user = this.authService.getUser();
     if (user) {
-      this.professor = { ...this.professor, ...user };
-      this.professor.name = user.name || user.firstName + ' ' + user.lastName;
-      this.professor.id = user.id; // Ensure ID is set
+      // Map backend fields to component fields
+      this.professor = {
+        ...this.professor,
+        id: user.id,
+        name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        title: user.specialization || 'Professor',
+        description: user.bio || '',
+        image: user.profile_image || 'assets/default-professor.png',
+        socialLinks: { linkedin: '#' }
+      };
       this.newCourse.professorId = user.id;
+      console.log('Professor profile loaded:', this.professor);
     } else {
+      // Fallback: fetch from API
       this.authService.getProfile().subscribe({
-        next: (data) => {
-          this.professor = data;
+        next: (response: any) => {
+          const data = response.user || response;
+          this.professor = {
+            ...this.professor,
+            id: data.id,
+            name: data.name || `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+            title: data.specialization || 'Professor',
+            description: data.bio || '',
+            image: data.profile_image || 'assets/default-professor.png',
+            socialLinks: { linkedin: '#' }
+          };
           this.newCourse.professorId = data.id;
+          console.log('Professor profile fetched from API:', this.professor);
         },
         error: (err: any) => console.error('Error fetching profile', err)
       });
@@ -82,8 +101,9 @@ export class ProfessorDashboardComponent implements OnInit {
 
   fetchProfessorCourses(): void {
     this.courseService.getMyCourses().subscribe({
-      next: (data) => {
-        this.myCourses = data;
+      next: (response: any) => {
+        // Handle response format: { success: true, courses: [...] }
+        this.myCourses = response.courses || [];
         console.log('Professor courses fetched:', this.myCourses);
       },
       error: (error: any) => {

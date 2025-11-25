@@ -53,22 +53,48 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   fetchStudentProfile(): void {
-    // Get user from local storage or fetch from API
     const user = this.authService.getUser();
     if (user) {
-      this.studentProfile = { ...this.studentProfile, ...user };
-      this.studentName = user.name || user.firstName + ' ' + user.lastName;
-      this.profileImage = user.profileImage || 'assets/stu.png';
-      this.university = user.university || 'Unknown University';
-      this.major = user.major || 'Unknown Major';
-      this.studentDescription = user.description || '';
+      // Map backend fields to component fields
+      this.studentProfile = {
+        ...this.studentProfile,
+        id: user.id,
+        name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        email: user.email,
+        university: user.university || 'Unknown University',
+        major: user.major || 'Unknown Major',
+        description: user.bio || '',
+        profileImage: user.profile_image || 'assets/stu.png',
+        userType: 'student'
+      };
+      this.studentName = this.studentProfile.name;
+      this.profileImage = this.studentProfile.profileImage;
+      this.university = this.studentProfile.university;
+      this.major = this.studentProfile.major;
+      this.studentDescription = this.studentProfile.description;
+      console.log('Student profile loaded:', this.studentProfile);
     } else {
-      // Fallback or redirect to login
+      // Fallback: fetch from API
       this.authService.getProfile().subscribe({
-        next: (data) => {
-          this.studentProfile = data;
-          this.studentName = data.name;
-          this.profileImage = data.profileImage;
+        next: (response: any) => {
+          const data = response.user || response;
+          this.studentProfile = {
+            ...this.studentProfile,
+            id: data.id,
+            name: data.name || `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+            email: data.email,
+            university: data.university || 'Unknown University',
+            major: data.major || 'Unknown Major',
+            description: data.bio || '',
+            profileImage: data.profile_image || 'assets/stu.png',
+            userType: 'student'
+          };
+          this.studentName = this.studentProfile.name;
+          this.profileImage = this.studentProfile.profileImage;
+          this.university = this.studentProfile.university;
+          this.major = this.studentProfile.major;
+          this.studentDescription = this.studentProfile.description;
+          console.log('Student profile fetched from API:', this.studentProfile);
         },
         error: (err: any) => console.error('Error fetching profile', err)
       });
@@ -76,18 +102,11 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   fetchStudentCourses(): void {
-    // Assuming there is an endpoint for my-courses or we filter from all courses
-    // Since the backend has /courses/my-courses for professors, maybe students have one too?
-    // Or maybe we just show all courses for now as "my courses" if enrolled?
-    // The plan said "Implement getMyCourses() -> GET /courses/my-courses (Professor)"
-    // For students, it might be different. Let's check if there is an endpoint.
-    // If not, I'll just fetch all courses for now or leave empty.
-    // Wait, the user said "connect each page to its api".
-    // I'll try to use a generic fetch or just static for now if no endpoint.
-    // Actually, let's use getAllCourses for now as a placeholder if no student-specific endpoint.
     this.courseService.getAllCourses().subscribe({
-      next: (data: any) => {
-        this.myCourses = Array.isArray(data) ? data : data.courses || [];
+      next: (response: any) => {
+        // Handle response format: { success: true, courses: [...] }
+        this.myCourses = response.courses || [];
+        console.log('Student courses fetched:', this.myCourses);
         this.calculateProgress();
       },
       error: (err: any) => {
