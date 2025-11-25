@@ -126,15 +126,21 @@ export class ProfessorDashboardComponent implements OnInit {
 
   submitAnnouncement(): void {
     if (this.newAnnouncement.title.trim() && this.newAnnouncement.description.trim() && this.newAnnouncement.courseId !== null) {
-      // Convert courseId to string if needed by service
-      this.courseService.addAnnouncement(this.newAnnouncement.courseId.toString(), this.newAnnouncement).subscribe({
+      // Only send title and description in the body (courseId is in the URL)
+      const announcementData = {
+        title: this.newAnnouncement.title,
+        description: this.newAnnouncement.description
+      };
+
+      this.courseService.addAnnouncement(this.newAnnouncement.courseId.toString(), announcementData).subscribe({
         next: (response) => {
           console.log('Announcement created successfully:', response);
           this.toggleAnnouncementForm();
         },
         error: (error: any) => {
           console.error('Error creating announcement:', error);
-          alert('Failed to create announcement. Please try again.');
+          console.error('Backend error details:', error.error); // Log the actual backend response
+          alert(`Failed to create announcement: ${error.error?.message || 'Unknown error'}`);
         }
       });
     } else {

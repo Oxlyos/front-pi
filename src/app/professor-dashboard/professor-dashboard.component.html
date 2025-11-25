@@ -10,7 +10,6 @@
           <p class="professor-bio">{{ professor.description }}</p>
           <div class="action-buttons">
             <button class="action-btn" (click)="toggleEditProfileForm()">Edit Profile Details</button>
-            <button class="forum-btn" routerLink="/forum">Go to Forum</button>
             <button class="logout-btn" (click)="logout()">Logout</button>
           </div>
         </div>
@@ -41,156 +40,168 @@
     </section>
   </main>
 
-    <!-- Announcement Form Modal -->
-    <div class="announcement-form-overlay" *ngIf="showAnnouncementForm">
-      <div class="announcement-form-container">
-        <h2>Write New Announcement</h2>
-        <form (ngSubmit)="submitAnnouncement()">
-          <div class="form-group">
-            <label for="announcementTitle">Title</label>
-            <input type="text" id="announcementTitle" [(ngModel)]="newAnnouncement.title" name="announcementTitle" placeholder="Announcement Title" required>
-          </div>
-          <div class="form-group">
-            <label for="announcementDescription">Description</label>
-            <textarea id="announcementDescription" [(ngModel)]="newAnnouncement.description" name="announcementDescription" rows="5" placeholder="Announcement Description" required></textarea>
-          </div>
-          <div class="form-group">
-            <label for="courseSelect">Select Course</label>
-            <select id="courseSelect" [(ngModel)]="newAnnouncement.courseId" name="courseSelect" required>
-              <option [ngValue]="null" disabled>Select a course</option>
-              <option *ngFor="let course of myCourses" [ngValue]="course.id">{{ course.title }}</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="action-btn primary">Submit Announcement</button>
-            <button type="button" class="action-btn" (click)="toggleAnnouncementForm()">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Edit Profile Form Modal -->
-    <div class="edit-profile-form-overlay" *ngIf="showEditProfileForm">
-      <div class="edit-profile-form-container">
-        <h2>Edit Professor Profile</h2>
-        <form (ngSubmit)="submitProfileChanges()">
-          <div class="form-group">
-            <label for="professorName">Name</label>
-            <input type="text" id="professorName" [(ngModel)]="professorProfile.name" name="professorName" required>
-          </div>
-          <div class="form-group">
-            <label for="professorTitle">Title</label>
-            <input type="text" id="professorTitle" [(ngModel)]="professorProfile.title" name="professorTitle" required>
-          </div>
-          <div class="form-group">
-            <label for="professorDescription">Description</label>
-            <textarea id="professorDescription" [(ngModel)]="professorProfile.description" name="professorDescription" rows="5" required></textarea>
-          </div>
-          <div class="form-group">
-            <label for="profileImage">Profile Image</label>
-            <input type="file" id="profileImage" (change)="onFileSelected($event)" name="profileImageFile" accept="image/*">
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="action-btn primary">Save Changes</button>
-            <button type="button" class="action-btn" (click)="toggleEditProfileForm()">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Create Course Form Modal -->
-    <div class="create-course-form-overlay" *ngIf="showCreateCourseForm">
-      <div class="create-course-form-container">
-        <h2>Create New Course</h2>
-        <form (ngSubmit)="submitCourse()">
-          <div class="form-group">
-            <label for="courseTitle">Course Title</label>
-            <input type="text" id="courseTitle" [(ngModel)]="newCourse.title" name="courseTitle" placeholder="e.g., Introduction to Angular" required>
-          </div>
-          <div class="form-group">
-            <label for="courseDescription">Course Description</label>
-            <textarea id="courseDescription" [(ngModel)]="newCourse.description" name="courseDescription" rows="5" placeholder="A brief overview of the course content." required></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label for="professorIntroduction">Professor Introduction for this Course</label>
-            <textarea id="professorIntroduction" [(ngModel)]="newCourse.professorIntroduction" name="professorIntroduction" rows="3" placeholder="Introduce yourself and your expertise for this course."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Video Links</label>
-            <div *ngFor="let link of newCourse.videoLinks; let i = index" class="video-link-input">
-              <input type="text" [(ngModel)]="newCourse.videoLinks[i]" name="videoLink{{i}}" placeholder="YouTube, Vimeo, etc. URL">
-              <button type="button" class="remove-btn" (click)="removeVideoLink(i)" *ngIf="newCourse.videoLinks.length > 1">-</button>
-            </div>
-            <button type="button" class="add-btn" (click)="addVideoLink()">+ Add Video Link</button>
-          </div>
-
-          <div class="form-group">
-            <label for="courseThumbnail">Course Thumbnail</label>
-            <input type="file" id="courseThumbnail" (change)="onThumbnailSelected($event)" name="courseThumbnailFile" accept="image/*">
-          </div>
-
-          <div class="form-group">
-            <label for="coursePdfs">Upload Course PDFs</label>
-            <input type="file" id="coursePdfs" (change)="onPdfSelected($event)" name="coursePdfFiles" accept=".pdf" multiple>
-          </div>
-          
-          <div class="form-actions">
-            <button type="submit" class="action-btn primary">Create Course</button>
-            <button type="button" class="action-btn" (click)="toggleCreateCourseForm()">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-<footer class="footer">
-  <div class="container">
-    <div class="footer-main">
-      <div class="footer-links">
-        <div class="link-column">
-          <h3>Platform</h3>
-          <ul>
-            <li><a href="#">Courses</a></li>
-            <li><a href="#">Professors</a></li>
-            <li><a href="#">Student Dashboard</a></li>
-            <li><a href="#">Professor Dashboard</a></li>
-            
-          </ul>
+  <!-- Announcement Form Modal -->
+  <div class="announcement-form-overlay" *ngIf="showAnnouncementForm">
+    <div class="announcement-form-container">
+      <h2>Write New Announcement</h2>
+      <form (ngSubmit)="submitAnnouncement()">
+        <div class="form-group">
+          <label for="announcementTitle">Title</label>
+          <input type="text" id="announcementTitle" [(ngModel)]="newAnnouncement.title" name="announcementTitle"
+            placeholder="Announcement Title" required>
         </div>
-        <div class="link-column">
-          <h3>Resources</h3>
-          <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><a href="#">Help Center <span class="new-badge">New</span></a></li>
-            <li><a href="#">Partnerships</a></li>
-          </ul>
+        <div class="form-group">
+          <label for="announcementDescription">Description</label>
+          <textarea id="announcementDescription" [(ngModel)]="newAnnouncement.description"
+            name="announcementDescription" rows="5" placeholder="Announcement Description" required></textarea>
         </div>
-        <div class="link-column">
-          <h3>Community</h3>
-          <ul>
-            <li><a href="#">Student Forums</a></li>
-            <li><a href="#">Events</a></li>
-            <li><a href="#">Groups</a></li>
-            <li><a href="#">Success Stories</a></li>
-          </ul>
+        <div class="form-group">
+          <label for="courseSelect">Select Course</label>
+          <select id="courseSelect" [(ngModel)]="newAnnouncement.courseId" name="courseSelect" required>
+            <option [ngValue]="null" disabled>Select a course</option>
+            <option *ngFor="let course of myCourses" [ngValue]="course.id">{{ course.title }}</option>
+          </select>
         </div>
-        <div class="link-column">
-          <h3>Support</h3>
-          <ul>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">About us</a></li>
-          </ul>
+        <div class="form-actions">
+          <button type="submit" class="action-btn primary">Submit Announcement</button>
+          <button type="button" class="action-btn" (click)="toggleAnnouncementForm()">Cancel</button>
         </div>
-      </div>
-    </div>
-    <div class="footer-social">
-      <a href="#"><img src="../../assets/linkedin.png" alt="LinkedIn icon"></a>
-      <a href="#"><img src="../../assets/facebook.png" alt="Facebook icon"></a>
-    
+      </form>
     </div>
   </div>
-</footer>
+
+  <!-- Edit Profile Form Modal -->
+  <div class="edit-profile-form-overlay" *ngIf="showEditProfileForm">
+    <div class="edit-profile-form-container">
+      <h2>Edit Professor Profile</h2>
+      <form (ngSubmit)="submitProfileChanges()">
+        <div class="form-group">
+          <label for="professorName">Name</label>
+          <input type="text" id="professorName" [(ngModel)]="professorProfile.name" name="professorName" required>
+        </div>
+        <div class="form-group">
+          <label for="professorTitle">Title</label>
+          <input type="text" id="professorTitle" [(ngModel)]="professorProfile.title" name="professorTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="professorDescription">Description</label>
+          <textarea id="professorDescription" [(ngModel)]="professorProfile.description" name="professorDescription"
+            rows="5" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="profileImage">Profile Image</label>
+          <input type="file" id="profileImage" (change)="onFileSelected($event)" name="profileImageFile"
+            accept="image/*">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="action-btn primary">Save Changes</button>
+          <button type="button" class="action-btn" (click)="toggleEditProfileForm()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Course Form Modal -->
+  <div class="create-course-form-overlay" *ngIf="showCreateCourseForm">
+    <div class="create-course-form-container">
+      <h2>Create New Course</h2>
+      <form (ngSubmit)="submitCourse()">
+        <div class="form-group">
+          <label for="courseTitle">Course Title</label>
+          <input type="text" id="courseTitle" [(ngModel)]="newCourse.title" name="courseTitle"
+            placeholder="e.g., Introduction to Angular" required>
+        </div>
+        <div class="form-group">
+          <label for="courseDescription">Course Description</label>
+          <textarea id="courseDescription" [(ngModel)]="newCourse.description" name="courseDescription" rows="5"
+            placeholder="A brief overview of the course content." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="professorIntroduction">Professor Introduction for this Course</label>
+          <textarea id="professorIntroduction" [(ngModel)]="newCourse.professorIntroduction"
+            name="professorIntroduction" rows="3"
+            placeholder="Introduce yourself and your expertise for this course."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Video Links</label>
+          <div *ngFor="let link of newCourse.videoLinks; let i = index" class="video-link-input">
+            <input type="text" [(ngModel)]="newCourse.videoLinks[i]" name="videoLink{{i}}"
+              placeholder="YouTube, Vimeo, etc. URL">
+            <button type="button" class="remove-btn" (click)="removeVideoLink(i)"
+              *ngIf="newCourse.videoLinks.length > 1">-</button>
+          </div>
+          <button type="button" class="add-btn" (click)="addVideoLink()">+ Add Video Link</button>
+        </div>
+
+        <div class="form-group">
+          <label for="courseThumbnail">Course Thumbnail</label>
+          <input type="file" id="courseThumbnail" (change)="onThumbnailSelected($event)" name="courseThumbnailFile"
+            accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label for="coursePdfs">Upload Course PDFs</label>
+          <input type="file" id="coursePdfs" (change)="onPdfSelected($event)" name="coursePdfFiles" accept=".pdf"
+            multiple>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="action-btn primary">Create Course</button>
+          <button type="button" class="action-btn" (click)="toggleCreateCourseForm()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-links">
+          <div class="link-column">
+            <h3>Platform</h3>
+            <ul>
+              <li><a href="#">Courses</a></li>
+              <li><a href="#">Professors</a></li>
+              <li><a href="#">Student Dashboard</a></li>
+              <li><a href="#">Professor Dashboard</a></li>
+
+            </ul>
+          </div>
+          <div class="link-column">
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">FAQs</a></li>
+              <li><a href="#">Help Center <span class="new-badge">New</span></a></li>
+              <li><a href="#">Partnerships</a></li>
+            </ul>
+          </div>
+          <div class="link-column">
+            <h3>Community</h3>
+            <ul>
+              <li><a href="#">Student Forums</a></li>
+              <li><a href="#">Events</a></li>
+              <li><a href="#">Groups</a></li>
+              <li><a href="#">Success Stories</a></li>
+            </ul>
+          </div>
+          <div class="link-column">
+            <h3>Support</h3>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+              <li><a href="#">About us</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-social">
+        <a href="#"><img src="../../assets/linkedin.png" alt="LinkedIn icon"></a>
+        <a href="#"><img src="../../assets/facebook.png" alt="Facebook icon"></a>
+
+      </div>
+    </div>
+  </footer>

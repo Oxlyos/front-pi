@@ -32,7 +32,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
     //testimonials function
     this.landingPageService.getTestimonials().subscribe({
-      next: (data: Testimonial[]) => {
+      next: (response: any) => {
+        const data = response.testimonials || [];
         this.originalTestimonials = data;
         const lastClones = this.originalTestimonials.slice(-this.itemsPerSlide);
         const firstClones = this.originalTestimonials.slice(0, this.itemsPerSlide);
@@ -48,8 +49,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
     //our professors function
     this.landingPageService.getProfessors().subscribe({
-      next: (data: Professor[]) => {
-        this.professors = data;
+      next: (response: any) => {
+        this.professors = response.professors || [];
       },
       error: (error: any) => {
         console.error('Error fetching professors from service:', error);
@@ -60,7 +61,20 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.courseService.getAllCourses().subscribe({
       next: (data: any) => {
         // Assuming API returns an array of courses directly or wrapped
-        this.courses = Array.isArray(data) ? data : data.courses || [];
+        const rawCourses = Array.isArray(data) ? data : data.courses || [];
+
+        // Map backend data to frontend Course interface
+        this.courses = rawCourses.map((course: any) => ({
+          ...course,
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          // Map image_url to image and ensure it has the full backend URL if it's a relative path
+          image: course.image_url ? (course.image_url.startsWith('http') ? course.image_url : `http://localhost:3000${course.image_url}`) : 'assets/default-course.png',
+          rating: 4.5, // Default rating for new courses
+          price: 'Free', // Default price
+          instructor: 'Professor' // Default instructor name if not provided
+        }));
       },
       error: (error: any) => {
         console.error('Error fetching courses:', error);
