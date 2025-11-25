@@ -3,13 +3,12 @@
     <div class="logo">
       <img src="../../assets/logo.png" alt="SkillBridge Logo">
     </div>
-    <nav class="nav" >
+    <nav class="nav">
       <ul>
         <li><a href="#hero">Home</a></li>
         <li><a href="#about-us">About Us</a></li>
         <li><a href="#most-followed-courses">Courses</a></li>
         <li><a href="#contact-us">Contact Us</a></li>
-   
       </ul>
     </nav>
     <div class="auth-buttons">
@@ -20,7 +19,6 @@
 </header>
 
 <section class="hero" id="hero">
-
   <div class="container">
     <div class="hero-content">
       <div class="circle-shape circle-1"></div>
@@ -28,14 +26,12 @@
       <div class="circle-shape circle-border-1"></div>
       <div class="circle-shape circle-border-2"></div>
       <h1>Learn Smarter. Connect Further. Achieve More.</h1>
-      <p>Access all your university courses, exams, and live sessions in one place. Learn, grow, and grow with your professors and classmates anytime.</p>
+      <p>Access all your university courses, exams, and live sessions in one place. Learn, grow, and grow with your
+        professors and classmates anytime.</p>
       <div class="hero-actions">
         <button class="btn primary" routerLink="/signup">Get Started</button>
-       
       </div>
-  
     </div>
-    
     <div class="hero-image">
       <img src="../../assets/student.jpg" alt="Happy student with books">
       <div class="stats-card video-courses ">
@@ -51,11 +47,7 @@
         <span>45+ Tutors</span>
       </div>
     </div>
-
-
-
-  </div> 
-  
+  </div>
 </section>
 
 <section class="partners">
@@ -71,46 +63,40 @@
     </div>
   </div>
 </section>
+
 <section class="about-us" id="about-us">
   <div class="container">
-
     <div class="about-us-row reverse">
       <div class="about-us-text">
         <h2>About Us</h2>
         <p>
-          SkillBridge is a leading online learning platform dedicated to providing students in Tunisia with high-quality educational resources.
-          We connect learners with expert professors and comprehensive courses to foster academic and professional growth across the country.
+          SkillBridge is a leading online learning platform dedicated to providing students in Tunisia with high-quality
+          educational resources.
+          We connect learners with expert professors and comprehensive courses to foster academic and professional
+          growth across the country.
         </p>
       </div>
-      
       <div class="about-us-image">
         <img src="../../assets/aboutus2.jpg" alt="image from the database">
       </div>
-    
     </div>
-
     <div class="about-us-row reverse">
       <div class="about-us-image">
         <img src="/../../assets/aboutus1.jpg" alt="about us">
       </div>
-
       <div class="about-us-text">
         <h2>Our Mission: Empowering Tunisian Learners to Achieve Their Full Potential</h2>
         <p>
-          Our mission is to empower students across Tunisia by providing accessible, engaging, and effective learning experiences.
-          We strive to break down educational barriers and help every Tunisian learner achieve their academic and career aspirations.
+          Our mission is to empower students across Tunisia by providing accessible, engaging, and effective learning
+          experiences.
+          We strive to break down educational barriers and help every Tunisian learner achieve their academic and career
+          aspirations.
         </p>
       </div>
     </div>
-
   </div>
 </section>
 
-
-
-
-
-<!--NOTE BRO : courses should be fetched from the database -->
 <section class="most-followed-courses" id="most-followed-courses">
   <div class="container">
     <p class="section-subtitle">Explore Programs</p>
@@ -125,10 +111,9 @@
           <div class="rating">
             <span>{{ course.rating }}</span>
             <span class="stars">★★★★★</span>
-            <span>({{ course.rating * 1000 | number:'1.0-0' }})</span> <!-- Placeholder for reviews -->
+            <span>({{ course.rating * 1000 | number:'1.0-0' }})</span>
           </div>
           <div class="instructor">
-            <!-- Instructor image and name are not part of the Course interface for landing page -->
             <span>Price: {{ course.price }}</span>
           </div>
         </div>
@@ -138,15 +123,12 @@
   </div>
 </section>
 
-
-
-
-<!--NOTE BRO :professors should be fetched from the database kifkif -->
 <section class="our-professors">
   <div class="container">
     <p class="section-subtitle">Tutors</p>
     <h2>Our Professors</h2>
-    <p class="section-description">On Weekend UX instructors from all over the world instruct millions of students. We offer the knowledge and abilities.</p>
+    <p class="section-description">On Weekend UX instructors from all over the world instruct millions of students. We
+      offer the knowledge and abilities.</p>
     <div class="professor-cards">
       <div class="professor-card" *ngFor="let professor of professors">
         <img [src]="professor.image" alt="{{ professor.name }} profile picture">
@@ -162,18 +144,14 @@
   </div>
 </section>
 
-
-
-
-
-<!--NOTE BRO : the names  and the infos of students  should be fetched from the database -->
 <section class="platform-benefits">
   <div class="container">
-    <div class="platform-icon"></div>   
-<h1 class="testi_title"> What our students say about skill-bridge </h1>
+    <div class="platform-icon"></div>
+    <h1 class="testi_title">What our students say about skill-bridge</h1>
     <div class="testimonials-slider" (mouseenter)="stopSlideShow()" (mouseleave)="startSlideShow()">
-      <div class="testimonials-wrapper" [style.transform]="'translateX(-' + currentSlideIndex * (100 / testimonials.length * itemsPerSlide) + '%)'"
-           [style.transition]="isTransitioning ? 'transform 0.5s ease-in-out' : 'none'">
+      <div class="testimonials-wrapper"
+        [style.transform]="'translateX(-' + currentSlideIndex * (100 / (testimonials.length * itemsPerSlide)) + '%)'"
+        [style.transition]="isTransitioning ? 'transform 0.5s ease-in-out' : 'none'">
         <ng-container *ngFor="let testimonial of testimonials; let i = index">
           <div class="testimonial-card">
             <div class="testimonial-author">
@@ -181,22 +159,15 @@
               <h3>{{ testimonial.name }}</h3>
               <p>{{ testimonial.role }}</p>
             </div>
-            <p class="section-description">"{{ testimonial.content }}"</p>
+            <p class="section-description">{{ testimonial.content }}</p>
           </div>
         </ng-container>
+        <span class="dot" *ngFor="let _ of originalTestimonials; let i = index"
+          [class.active]="i === (currentSlideIndex - itemsPerSlide)" (click)="goToSlide(i)"></span>
       </div>
-     
-    </div>
-    <div class="pagination">
-      <span class="dot" *ngFor="let testimonial of originalTestimonials; let i = index" [class.active]="i === (currentSlideIndex - itemsPerSlide)" (click)="goToSlide(i)"></span>
     </div>
   </div>
 </section>
-
-
-
-
-
 
 <section class="student-community">
   <div class="container">
@@ -207,7 +178,8 @@
         <div class="post-info">
           <p class="date">November 16, 2014</p>
           <h3>How to Prepare for Exam Week</h3>
-          <p class="description">Delight can be experienced viscerally, behaviourally, and reflectively. A great design is ...</p>
+          <p class="description">Delight can be experienced viscerally, behaviourally, and reflectively. A great design
+            is ...</p>
           <div class="tags">
             <span>Research</span>
           </div>
@@ -218,7 +190,8 @@
         <div class="post-info">
           <p class="date">September 24, 2017</p>
           <h3>UX Mapping Methods</h3>
-          <p class="description">Visual-design principles can be applied consistently throughout the process of creating a polished UX map...</p>
+          <p class="description">Visual-design principles can be applied consistently throughout the process of creating
+            a polished UX map...</p>
           <div class="tags">
             <span>Research</span>
             <span>UI Design</span>
@@ -230,7 +203,8 @@
         <div class="post-info">
           <p class="date">March 13, 2014</p>
           <h3>Agile Development Projects and Usability</h3>
-          <p class="description">Agile methods aim to overcome usability barriers in traditional development, but post new threats to user experience quality.</p>
+          <p class="description">Agile methods aim to overcome usability barriers in traditional development, but post
+            new threats to user experience quality.</p>
           <div class="tags">
             <span>Programming</span>
             <span>Research</span>
@@ -242,15 +216,12 @@
   </div>
 </section>
 
-
-
-
 <section class="contact-us" id="contact-us">
   <div class="container">
     <div class="contact-content">
       <div class="contact-form">
         <h2>Get in Touch</h2>
-        <p>We'd love to hear from you! Fill out the form below to contact us.</p>
+        <p>We'd love to hear from you! Fill the form below to contact us.</p>
         <form>
           <div class="form-group">
             <label for="name">Name</label>
@@ -274,7 +245,6 @@
   </div>
 </section>
 
-
 <footer class="footer">
   <div class="container">
     <div class="footer-main">
@@ -286,7 +256,6 @@
             <li><a href="#">Professors</a></li>
             <li><a href="#">Student Dashboard</a></li>
             <li><a href="#">Professor Dashboard</a></li>
-            
           </ul>
         </div>
         <div class="link-column">
@@ -317,11 +286,10 @@
           </ul>
         </div>
       </div>
-    </div>
-    <div class="footer-social">
-      <a href="#"><img src="../../assets/linkedin.png" alt="LinkedIn icon"></a>
-      <a href="#"><img src="../../assets/facebook.png" alt="Facebook icon"></a>
-    
+      <div class="footer-social">
+        <a href="#"><img src="../../assets/linkedin.png" alt="LinkedIn icon"></a>
+        <a href="#"><img src="../../assets/facebook.png" alt="Facebook icon"></a>
+      </div>
     </div>
   </div>
 </footer>

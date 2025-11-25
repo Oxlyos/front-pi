@@ -25,8 +25,30 @@ export class ForumComponent implements OnInit {
 
   fetchPosts() {
     this.questionService.getAllQuestions().subscribe({
-      next: (data) => {
-        this.posts = data;
+      next: (data: any) => {
+        const rawQuestions = data.questions || [];
+        this.posts = rawQuestions.map((q: any) => ({
+          id: q.id,
+          content: q.content,
+          timestamp: q.created_at,
+          user: {
+            id: q.user_id,
+            userName: q.author_name,
+            role: q.author_role,
+            avatar: 'assets/default-avatar.png' // Placeholder as backend doesn't send avatar yet
+          },
+          replies: (q.replies || []).map((r: any) => ({
+            id: r.id,
+            content: r.content,
+            timestamp: r.created_at,
+            user: {
+              id: r.user_id,
+              userName: r.author_name,
+              role: r.author_role,
+              avatar: 'assets/default-avatar.png'
+            }
+          }))
+        }));
         console.log('Forum posts fetched:', this.posts);
       },
       error: (error: any) => {
@@ -38,8 +60,7 @@ export class ForumComponent implements OnInit {
   createPost() {
     if (this.newPostContent.trim()) {
       const postData = {
-        content: this.newPostContent,
-        title: 'New Question' // Backend expects a title? Adding default for now.
+        content: this.newPostContent
       };
 
       this.questionService.createQuestion(postData).subscribe({

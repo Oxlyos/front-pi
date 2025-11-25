@@ -11,6 +11,7 @@
           <p class="student-bio">{{ studentDescription }}</p>
           <div class="action-buttons">
             <button class="edit-btn" (click)="toggleEditProfileForm()">Edit Profile Details</button>
+            <button class="forum-btn" routerLink="/forum">Go to Forum</button> <!-- Added Forum button -->
             <button class="back-to-home-btn" routerLink="/home">Back to Home</button> <!-- Moved here -->
             <button class="logout-btn" (click)="logout()">Logout</button> <!-- Added Logout button -->
           </div>
@@ -69,11 +70,13 @@
     <form (ngSubmit)="submitProfileChanges()">
       <div class="form-group">
         <label for="studentNameInput">Name</label>
-        <input type="text" id="studentNameInput" [(ngModel)]="studentProfile.name" name="studentName" placeholder="Student Name" required>
+        <input type="text" id="studentNameInput" [(ngModel)]="studentProfile.name" name="studentName"
+          placeholder="Student Name" required>
       </div>
       <div class="form-group">
         <label for="universityInput">University</label>
-        <input type="text" id="universityInput" [(ngModel)]="studentProfile.university" name="university" placeholder="University" required>
+        <input type="text" id="universityInput" [(ngModel)]="studentProfile.university" name="university"
+          placeholder="University" required>
       </div>
       <div class="form-group">
         <label for="majorInput">Major</label>
@@ -81,7 +84,8 @@
       </div>
       <div class="form-group">
         <label for="studentDescriptionInput">Description</label>
-        <textarea id="studentDescriptionInput" [(ngModel)]="studentProfile.description" name="studentDescription" rows="5" placeholder="Student Description" required></textarea>
+        <textarea id="studentDescriptionInput" [(ngModel)]="studentProfile.description" name="studentDescription"
+          rows="5" placeholder="Student Description" required></textarea>
       </div>
       <div class="form-group">
         <label for="profileImageInput">Profile Image</label>
@@ -98,7 +102,7 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-main">
-      
+
       <div class="footer-links">
         <div class="link-column">
           <h3>Platform</h3>
